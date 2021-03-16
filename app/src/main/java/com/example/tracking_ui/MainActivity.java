@@ -47,10 +47,17 @@ public class MainActivity<MyActivity> extends AppCompatActivity {
     };
 
     @Override
-    protected void onDestroy() {
+    protected void onDestroy(){
+
         Log.d(TAG, "onDestroy: called.");
+        try{
+            if(mBroadcastReceiver1 != null) {
+                this.unregisterReceiver(mBroadcastReceiver1);
+            }
+        } catch (Exception e){
+            // already unregistered
+        }
         super.onDestroy();
-        unregisterReceiver(mBroadcastReceiver1);
     }
 
     @Override
