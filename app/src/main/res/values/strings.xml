@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">tracking-ui</string>
     <string name="start_button">start</string>
+    <string name="bluetooth_btn">ON/OFF</string>
 </resources>
