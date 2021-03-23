@@ -3,4 +3,5 @@
     <string name="start_button">start</string>
     <string name="bluetooth_btn">ON/OFF</string>
     <string name="discoverability">Enable Discoverability</string>
+    <string name="saveLocation">Save Location</string>
 </resources>
