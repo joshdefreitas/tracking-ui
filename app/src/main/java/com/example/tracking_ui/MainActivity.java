@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,11 +18,17 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.util.Log;
+import android.widget.ListView;
+
+import java.util.ArrayList;
 
 public class MainActivity<MyActivity> extends AppCompatActivity {
     private static final String TAG = "MainActivity";
-    private Button startButton,btnONOFF,enableDiscoverable;
+    private Button startButton,btnONOFF,enableDiscoverable, btnDiscover;
     BluetoothAdapter mBluetoothAD;
+    public ArrayList<BluetoothDevice> BTDevices = new ArrayList<>();
+    public DeviceListAdapter DeviceListAdapter;
+    ListView lvNewDevices;
 
     // Create a BroadcastReceiver for ACTION_FOUND.
     private final BroadcastReceiver mBroadcastReceiver1 = new BroadcastReceiver() {
@@ -46,6 +53,7 @@ public class MainActivity<MyActivity> extends AppCompatActivity {
         }
     };
 
+    // Creater a BroadcastReceiver for ACTION SCAN
     private final BroadcastReceiver mBroadcastReceiver2 = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -72,6 +80,23 @@ public class MainActivity<MyActivity> extends AppCompatActivity {
                         break;
                 }
 
+            }
+        }
+    };
+
+    // Creater a BroadcastReceiver for ACTION_FOUND
+    private  BroadcastReceiver mBroadcastReceiver3 = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            Log.d(TAG, "onReceive: ACTION FOUND.");
+
+            if (action.equals(BluetoothDevice.ACTION_FOUND)){
+                BluetoothDevice device = intent.getParcelableExtra (BluetoothDevice.EXTRA_DEVICE);
+                BTDevices.add(device);
+                Log.d(TAG, "onReceive: " + device.getName() + ": " + device.getAddress());
+                DeviceListAdapter = new DeviceListAdapter(context, R.layout.device_adapter_view, BTDevices);
+                lvNewDevices.setAdapter(DeviceListAdapter);
             }
         }
     };
@@ -125,6 +150,9 @@ public class MainActivity<MyActivity> extends AppCompatActivity {
         });
 
         enableDiscoverable = findViewById(R.id.button2);
+        btnDiscover = findViewById(R.id.button4);
+        lvNewDevices = findViewById(R.id.lvNewDevices);
+        BTDevices = new ArrayList<>();
 
     }
 
@@ -175,5 +203,52 @@ public class MainActivity<MyActivity> extends AppCompatActivity {
 
         IntentFilter intentFilter = new IntentFilter(mBluetoothAD.ACTION_SCAN_MODE_CHANGED);
         registerReceiver(mBroadcastReceiver2,intentFilter);
+    }
+
+    // Discover unpaired devices
+    public void Discover(View view) {
+        Log.d(TAG,"Discover: Looking for unpaired devices");
+
+        if(mBluetoothAD.isDiscovering()){
+            mBluetoothAD.cancelDiscovery();
+            Log.d(TAG,"Discover: Cancelling discovery");
+
+            // Check BT permissions in mainifest
+            checkBTPermissions();
+
+            mBluetoothAD.startDiscovery();
+            IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+            registerReceiver(mBroadcastReceiver3, discoverDevicesIntent);
+        }
+        if(!mBluetoothAD.isDiscovering()){
+
+            // Check BT permissions in manifest
+            checkBTPermissions();
+
+            mBluetoothAD.startDiscovery();
+            mBluetoothAD.startDiscovery();
+            IntentFilter discoverDevicesIntent = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+            registerReceiver(mBroadcastReceiver3, discoverDevicesIntent);
+        }
+    }
+
+    /**
+     * This method is required for all devices running API23+
+     * Android must programmatically check the permissions for bluetooth. Putting the proper permissions
+     * in the manifest is not enough.
+     *
+     * NOTE: This will only execute on versions > LOLLIPOP because it is not needed otherwise.
+     */
+    private void checkBTPermissions() {
+        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
+            int permissionCheck = this.checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION");
+            permissionCheck += this.checkSelfPermission("Manifest.permission.ACCESS_COARSE_LOCATION");
+            if (permissionCheck != 0) {
+
+                this.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1001); //Any number
+            }
+        }else{
+            Log.d(TAG, "checkBTPermissions: No need to check permissions. SDK version < LOLLIPOP.");
+        }
     }
 }
