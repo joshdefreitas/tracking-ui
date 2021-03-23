@@ -1,9 +1,12 @@
 package com.example.tracking_ui;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.view.Display;
+import android.view.WindowManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -39,6 +42,10 @@ public class ShowWebChartActivity extends AppCompatActivity {
         num5 = intent.getIntExtra("NUM5", 20);
 
         webView = (WebView)findViewById(R.id.web2);
+        webView.getSettings().setLoadWithOverviewMode(true);
+        webView.getSettings().setUseWideViewPort(true);
+        webView.setPadding(0, 0, 0, 10);
+
         webView.addJavascriptInterface(new WebAppInterface(), "Android");
 
         webView.getSettings().setJavaScriptEnabled(true);
@@ -73,5 +80,6 @@ public class ShowWebChartActivity extends AppCompatActivity {
             return num5;
         }
     }
+
 
 }
