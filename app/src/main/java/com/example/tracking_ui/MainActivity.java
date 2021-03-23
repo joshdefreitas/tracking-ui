@@ -20,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.util.Log;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -133,19 +134,38 @@ public class MainActivity<MyActivity> extends AppCompatActivity implements Adapt
     protected void onDestroy(){
 
         Log.d(TAG, "onDestroy: called.");
-        this.unregisterReceiver(mBroadcastReceiver1);
-        this.unregisterReceiver(mBroadcastReceiver2);
-        this.unregisterReceiver(mBroadcastReceiver3);
-        this.unregisterReceiver(mBroadcastReceiver4);//        try{
-//            if(mBroadcastReceiver1 != null) {
-//                this.unregisterReceiver(mBroadcastReceiver1);
-//                this.unregisterReceiver(mBroadcastReceiver2);
-//                this.unregisterReceiver(mBroadcastReceiver3);
-//                this.unregisterReceiver(mBroadcastReceiver4);
-//            }
-//        } catch (Exception e){
-//            // already unregistered
-//        }
+        try{
+            if(mBroadcastReceiver1 != null) {
+                this.unregisterReceiver(mBroadcastReceiver1);
+
+            }
+        } catch (Exception e){
+            // already unregistered
+        }
+        try{
+            if(mBroadcastReceiver2 != null) {
+                this.unregisterReceiver(mBroadcastReceiver1);
+
+            }
+        } catch (Exception e){
+            // already unregistered
+        }
+        try{
+            if(mBroadcastReceiver3 != null) {
+                this.unregisterReceiver(mBroadcastReceiver1);
+
+            }
+        } catch (Exception e){
+            // already unregistered
+        }
+        try{
+            if(mBroadcastReceiver4 != null) {
+                this.unregisterReceiver(mBroadcastReceiver1);
+
+            }
+        } catch (Exception e){
+            // already unregistered
+        }
         super.onDestroy();
     }
 
@@ -313,6 +333,8 @@ public class MainActivity<MyActivity> extends AppCompatActivity implements Adapt
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2){
             Log.d(TAG, "Trying to pair with " + deviceName);
             BTDevices.get(i).createBond();
+            Toast.makeText(this, "Successfully connected to: "+deviceName,
+                    Toast.LENGTH_LONG).show();
         }
     }
 }
