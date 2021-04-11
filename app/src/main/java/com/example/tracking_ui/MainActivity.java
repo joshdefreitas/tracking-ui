@@ -5,6 +5,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -22,11 +23,20 @@ import android.util.Log;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.UUID;
 
-public class MainActivity<MyActivity> extends AppCompatActivity implements AdapterView.OnItemClickListener{
+public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
     private static final String TAG = "MainActivity";
-    private Button startButton,btnONOFF,enableDiscoverable, btnDiscover;
+    private Button startButton,btnONOFF,enableDiscoverable, btnDiscover, btnStartConnection;
+
+    BluetoothConnectionService mBluetoothConnection;
+    private static final UUID MY_UUID_INSECURE =
+            UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    BluetoothDevice mBTDevice;
+
+
     BluetoothAdapter mBluetoothAD;
     public ArrayList<BluetoothDevice> BTDevices = new ArrayList<>();
     public DeviceListAdapter DeviceListAdapter;
@@ -118,6 +128,7 @@ public class MainActivity<MyActivity> extends AppCompatActivity implements Adapt
                 //case1: bonded already
                 if (mDevice.getBondState() == BluetoothDevice.BOND_BONDED){
                     Log.d(TAG, "BroadcastReceiver: BOND_BONDED.");
+                    mBTDevice = mDevice;
                 }
                 //case2: creating a bone
                 if (mDevice.getBondState() == BluetoothDevice.BOND_BONDING) {
@@ -184,6 +195,14 @@ public class MainActivity<MyActivity> extends AppCompatActivity implements Adapt
 
         mBluetoothAD = BluetoothAdapter.getDefaultAdapter();
 
+        btnStartConnection = findViewById(R.id.connectionBtn);
+        btnStartConnection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startConnection();
+            }
+        });
+
         btnONOFF = findViewById(R.id.btnONOFF);
         btnONOFF.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -206,6 +225,7 @@ public class MainActivity<MyActivity> extends AppCompatActivity implements Adapt
         enableDiscoverable = findViewById(R.id.button2);
         btnDiscover = findViewById(R.id.button4);
         lvNewDevices = findViewById(R.id.lvNewDevices);
+        lvNewDevices.setOnItemClickListener(MainActivity.this);
 //        lvNewDevices.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 //            @Override
 //            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -219,19 +239,33 @@ public class MainActivity<MyActivity> extends AppCompatActivity implements Adapt
         registerReceiver(mBroadcastReceiver4, filter);
     }
 
+    //start service method
+    public void  startBTConnection(BluetoothDevice device, UUID uuid){
+        Log.d(TAG, "startBTConnection: Initializing RFCOM BT connection and starting tracking fragment");
+        mBluetoothConnection.startClient(device,uuid);
+    }
+
     //Onclick method for start button
-    public void startAlgorithm() {
-        Intent intent = new Intent(
-                MainActivity.this,
-                ShowWebChartActivity.class);
-        intent.putExtra("NUM1", 20);
-        intent.putExtra("NUM2", 20);
-        intent.putExtra("NUM3", 20);
-        intent.putExtra("NUM4", 20);
-        intent.putExtra("NUM5", 20);
+    public void startAlgorithm(){
+        byte[] bytes = "start".getBytes(Charset.defaultCharset());
+        mBluetoothConnection.write(bytes);
 
-        startActivity(intent);
+//        Intent intent = new Intent(
+//                MainActivity.this,
+//                ShowWebChartActivity.class);
+//        intent.putExtra("NUM1", 20);
+//        intent.putExtra("NUM2", 20);
+//        intent.putExtra("NUM3", 20);
+//        intent.putExtra("NUM4", 20);
+//        intent.putExtra("NUM5", 20);
+//
+//        startActivity(intent);
 
+    }
+
+    //method for starting connection
+    public void startConnection(){
+        startBTConnection(mBTDevice, MY_UUID_INSECURE);
     }
 
     //Onclick method for bluetooth button
@@ -302,6 +336,7 @@ public class MainActivity<MyActivity> extends AppCompatActivity implements Adapt
      *
      * NOTE: This will only execute on versions > LOLLIPOP because it is not needed otherwise.
      */
+    @TargetApi(Build.VERSION_CODES.M)
     private void checkBTPermissions() {
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
             int permissionCheck = this.checkSelfPermission("Manifest.permission.ACCESS_FINE_LOCATION");
@@ -317,6 +352,7 @@ public class MainActivity<MyActivity> extends AppCompatActivity implements Adapt
 
 
     @Override
+    @TargetApi(19)
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         //first cancel discovery because its very memory intensive.
         mBluetoothAD.cancelDiscovery();
@@ -330,10 +366,12 @@ public class MainActivity<MyActivity> extends AppCompatActivity implements Adapt
 
         //create the bond.
         //NOTE: Requires API 17+? I think this is JellyBean
-        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2){
+       if(Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2){
             Log.d(TAG, "Trying to pair with " + deviceName);
             BTDevices.get(i).createBond();
-            Toast.makeText(this, "Successfully connected to: "+deviceName,
+            mBTDevice = BTDevices.get(i);
+            mBluetoothConnection = new BluetoothConnectionService(MainActivity.this);
+            Toast.makeText(MainActivity.this, "Successfully connected to: "+deviceName,
                     Toast.LENGTH_LONG).show();
         }
     }
