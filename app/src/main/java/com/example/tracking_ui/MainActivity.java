@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -18,6 +19,9 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.util.Log;
@@ -27,6 +31,19 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.UUID;
 
+//plotting graph imports
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.os.Bundle;
+import android.view.Display;
+import android.view.WindowManager;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+
+@SuppressLint("SetJavaScriptEnabled")
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
     String currentLocation;
     StringBuilder messages;
@@ -43,6 +60,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public ArrayList<BluetoothDevice> BTDevices = new ArrayList<>();
     public DeviceListAdapter DeviceListAdapter;
     ListView lvNewDevices;
+
+    //Plotting graph
+    WebView webView;
+    int num1, num2, num3, num4, num5;
 
     /*
     *****************     BROADCAST RECEIVERS     ****************
@@ -270,6 +291,19 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         //Broadcasts when bond state changes
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         registerReceiver(mBroadcastReceiver4, filter);
+
+
+        //Plotting graph initializations
+        webView = (WebView)findViewById(R.id.web2);
+        webView.getSettings().setLoadWithOverviewMode(true);
+        webView.getSettings().setUseWideViewPort(true);
+        webView.setPadding(0, 0, 0, 10);
+
+        webView.addJavascriptInterface(new WebAppInterface(), "Android");
+
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.setWebViewClient(new WebViewClient());
+        webView.loadUrl("file:///android_asset/chart.html");
     }
 
 
@@ -419,7 +453,37 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
+    /*
+     ********************     PLOTTING GRAPH METHODS    *****************
+     */
 
+    public class WebAppInterface {
+
+        @JavascriptInterface
+        public int getNum1() {
+            return num1;
+        }
+
+        @JavascriptInterface
+        public int getNum2() {
+            return num2;
+        }
+
+        @JavascriptInterface
+        public int getNum3() {
+            return num3;
+        }
+
+        @JavascriptInterface
+        public int getNum4() {
+            return num4;
+        }
+
+        @JavascriptInterface
+        public int getNum5() {
+            return num5;
+        }
+    }
 
 
 
