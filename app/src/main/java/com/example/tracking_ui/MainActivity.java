@@ -3,6 +3,7 @@ package com.example.tracking_ui;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -22,12 +23,14 @@ import android.widget.Button;
 import android.util.Log;
 import android.widget.ListView;
 import android.widget.Toast;
-
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
+    String currentLocation;
+    StringBuilder messages;
+
     private static final String TAG = "MainActivity";
     private Button startButton,btnONOFF,enableDiscoverable, btnDiscover, btnStartConnection, btnCalibrate;
 
@@ -116,6 +119,16 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     };
 
+    // Broadcast receiver for inputStream message
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String text = intent.getStringExtra("theMessage");
+            messages.append(text);
+            currentLocation = messages.toString();
+        }
+    };
+
     //
     /**
      * Broadcast Receiver that detects bond state changes (Pairing status changes)
@@ -200,6 +213,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         setContentView(R.layout.activity_main);
         //change orientation to landscape
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+
+        messages = new StringBuilder();
+
+        LocalBroadcastManager.getInstance(MainActivity.this).registerReceiver(mReceiver, new IntentFilter("incomingMessage"));
+
 
         mBluetoothAD = BluetoothAdapter.getDefaultAdapter();
 
