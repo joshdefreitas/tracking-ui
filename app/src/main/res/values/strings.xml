@@ -4,4 +4,7 @@
     <string name="bluetooth_btn">ON/OFF</string>
     <string name="discoverability">Enable Discoverability</string>
     <string name="saveLocation">Save Location</string>
+    <string name="discover">Discover</string>
+    <string name="start_connection">Start Connection</string>
+    <string name="calibrate_camera">Calibrate Camera</string>
 </resources>

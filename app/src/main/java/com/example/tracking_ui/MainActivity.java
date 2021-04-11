@@ -29,18 +29,21 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
     private static final String TAG = "MainActivity";
-    private Button startButton,btnONOFF,enableDiscoverable, btnDiscover, btnStartConnection;
+    private Button startButton,btnONOFF,enableDiscoverable, btnDiscover, btnStartConnection, btnCalibrate;
 
     BluetoothConnectionService mBluetoothConnection;
     private static final UUID MY_UUID_INSECURE =
             UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     BluetoothDevice mBTDevice;
 
-
     BluetoothAdapter mBluetoothAD;
     public ArrayList<BluetoothDevice> BTDevices = new ArrayList<>();
     public DeviceListAdapter DeviceListAdapter;
     ListView lvNewDevices;
+
+    /*
+    *****************     BROADCAST RECEIVERS     ****************
+     */
 
     // Create a BroadcastReceiver for ACTION_FOUND.
     private final BroadcastReceiver mBroadcastReceiver1 = new BroadcastReceiver() {
@@ -141,6 +144,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         }
     };
+
+    /*
+     ********************     ONCREATE & ONDESTROY METHODS    *****************
+     */
+
     @Override
     protected void onDestroy(){
 
@@ -212,6 +220,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         });
 
+        btnCalibrate = findViewById(R.id.btnCalibrate);
+        btnCalibrate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                calibrateCamera();
+            }
+        });
 
         startButton = findViewById(R.id.button);
         startButton.setOnClickListener(new View.OnClickListener() {
@@ -239,6 +254,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         registerReceiver(mBroadcastReceiver4, filter);
     }
 
+
+
+
+    /*
+    ********************     BLUETOOTH METHODS     *****************
+     */
     //start service method
     public void  startBTConnection(BluetoothDevice device, UUID uuid){
         Log.d(TAG, "startBTConnection: Initializing RFCOM BT connection and starting tracking fragment");
@@ -250,19 +271,24 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         byte[] bytes = "start".getBytes(Charset.defaultCharset());
         mBluetoothConnection.write(bytes);
 
-//        Intent intent = new Intent(
-//                MainActivity.this,
-//                ShowWebChartActivity.class);
-//        intent.putExtra("NUM1", 20);
-//        intent.putExtra("NUM2", 20);
-//        intent.putExtra("NUM3", 20);
-//        intent.putExtra("NUM4", 20);
-//        intent.putExtra("NUM5", 20);
-//
-//        startActivity(intent);
+        Intent intent = new Intent(
+                MainActivity.this,
+                ShowWebChartActivity.class);
+        intent.putExtra("NUM1", 20);
+        intent.putExtra("NUM2", 20);
+        intent.putExtra("NUM3", 20);
+        intent.putExtra("NUM4", 20);
+        intent.putExtra("NUM5", 20);
+
+        startActivity(intent);
 
     }
 
+    //Onclick method to calibrate camera
+    public void calibrateCamera(){
+        byte[] bytes = "camera 0".getBytes(Charset.defaultCharset());
+        mBluetoothConnection.write(bytes);
+    }
     //method for starting connection
     public void startConnection(){
         startBTConnection(mBTDevice, MY_UUID_INSECURE);
@@ -350,7 +376,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         }
     }
 
-
     @Override
     @TargetApi(19)
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -371,8 +396,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             BTDevices.get(i).createBond();
             mBTDevice = BTDevices.get(i);
             mBluetoothConnection = new BluetoothConnectionService(MainActivity.this);
-            Toast.makeText(MainActivity.this, "Successfully connected to: "+deviceName,
+            Toast.makeText(MainActivity.this, "Successfully paired to: "+deviceName,
                     Toast.LENGTH_LONG).show();
         }
     }
+
+
+
+
+
+
 }
