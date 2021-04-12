@@ -154,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 currentLocation = new Point(Integer.parseInt(splitString[0]),Integer.parseInt(splitString[0]),Integer.parseInt(splitString[0]));
                 plotGraph();
             }catch (Exception e){
-                Log.d(TAG, e.toString());
+                Log.d(TAG, "Error parsing location: " + e.toString());
             }
 
 
