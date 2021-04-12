@@ -1,37 +1,37 @@
 package com.example.tracking_ui;
 
 public class Point {
-    private int x;
-    private int y;
-    private int yaw;
+    private double x;
+    private double y;
+    private double yaw;
 
-    public Point(int x, int y, int yaw) {
+    public Point(double x, double y, double yaw) {
         this.x = x;
         this.y = y;
         this.yaw = yaw;
     }
 
-    public int getX() {
+    public double getX() {
         return x;
     }
 
-    public int getY() {
+    public double getY() {
         return y;
     }
 
-    public int getYaw() {
+    public double getYaw() {
         return yaw;
     }
 
-    public void setX(int x) {
+    public void setX(double x) {
         this.x = x;
     }
 
-    public void setY(int y) {
+    public void setY(double y) {
         this.y = y;
     }
 
-    public void setYaw(int yaw) {
+    public void setYaw(double yaw) {
         this.yaw = yaw;
     }
 }

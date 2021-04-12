@@ -473,22 +473,22 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public class WebAppInterface {
 
         @JavascriptInterface
-        public int getNum1() {
+        public double getNum1() {
             return currentLocation.getX();
         }
 
         @JavascriptInterface
-        public int getNum2() {
+        public double getNum2() {
             return currentLocation.getY();
         }
 
         @JavascriptInterface
-        public int getNum3() {
+        public double getNum3() {
             return savedLocation.getX();
         }
 
         @JavascriptInterface
-        public int getNum4() {
+        public double getNum4() {
             return savedLocation.getY();
         }
 
