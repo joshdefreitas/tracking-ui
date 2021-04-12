@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     ListView lvNewDevices;
 
     //Plotting graph
-    Point currentLocation;
+    Point currentLocation = new Point(0, 0, 0);
     StringBuilder messages;
     WebView webView;
     ArrayList<Point> ptsList;
