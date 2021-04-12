@@ -314,6 +314,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 
         //Plotting graph initializations
+        webView = (WebView)findViewById(R.id.web2);
+        webView.getSettings().setLoadWithOverviewMode(true);
+        webView.getSettings().setUseWideViewPort(true);
+        webView.setPadding(0, 0, 0, 10);
+
+        webView.addJavascriptInterface(new WebAppInterface(), "Android");
+
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.setWebViewClient(new WebViewClient());
         plotGraph();
     }
 
@@ -458,15 +467,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
      ********************     PLOTTING GRAPH METHODS    *****************
      */
     public void plotGraph(){
-        webView = (WebView)findViewById(R.id.web2);
-        webView.getSettings().setLoadWithOverviewMode(true);
-        webView.getSettings().setUseWideViewPort(true);
-        webView.setPadding(0, 0, 0, 10);
 
-        webView.addJavascriptInterface(new WebAppInterface(), "Android");
-
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.setWebViewClient(new WebViewClient());
         webView.loadUrl("file:///android_asset/chart.html");
     }
 
