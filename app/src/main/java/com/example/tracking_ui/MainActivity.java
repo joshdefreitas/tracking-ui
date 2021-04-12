@@ -45,8 +45,7 @@ import android.webkit.WebViewClient;
 
 @SuppressLint("SetJavaScriptEnabled")
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener{
-    String currentLocation;
-    StringBuilder messages;
+
 
     private static final String TAG = "MainActivity";
     private Button startButton,btnONOFF,enableDiscoverable, btnDiscover, btnStartConnection, btnCalibrate;
@@ -62,7 +61,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     ListView lvNewDevices;
 
     //Plotting graph
+    Point currentLocation;
+    StringBuilder messages;
     WebView webView;
+    ArrayList<Point> ptsList;
     int num1, num2, num3, num4, num5;
 
     /*
@@ -146,7 +148,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         public void onReceive(Context context, Intent intent) {
             String text = intent.getStringExtra("theMessage");
             messages.append(text);
-            currentLocation = messages.toString();
+
+            try {
+                String [] splitString = text.split("\\s+");
+                currentLocation = new Point(Integer.parseInt(splitString[0]),Integer.parseInt(splitString[0]),Integer.parseInt(splitString[0]));
+            }catch (Exception e){
+                Log.d(TAG, e.toString());
+            }
+
+
         }
     };
 
