@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 
     private static final String TAG = "MainActivity";
-    private Button startButton,btnONOFF,enableDiscoverable, btnDiscover, btnStartConnection, btnCalibrate;
+    private Button startButton,btnONOFF,enableDiscoverable, btnDiscover, btnStartConnection, btnCalibrate, savebtn;
 
     BluetoothConnectionService mBluetoothConnection;
     private static final UUID MY_UUID_INSECURE =
@@ -62,10 +62,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     //Plotting graph
     Point currentLocation = new Point(0, 0, 0);
+    Point savedLocation = new Point(0,0,0);
     StringBuilder messages;
     WebView webView;
     ArrayList<Point> ptsList;
-    int num1, num2, num3, num4, num5;
 
     /*
     *****************     BROADCAST RECEIVERS     ****************
@@ -152,6 +152,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             try {
                 String [] splitString = text.split("\\s+");
                 currentLocation = new Point(Integer.parseInt(splitString[0]),Integer.parseInt(splitString[0]),Integer.parseInt(splitString[0]));
+                plotGraph();
             }catch (Exception e){
                 Log.d(TAG, e.toString());
             }
@@ -252,6 +253,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
         mBluetoothAD = BluetoothAdapter.getDefaultAdapter();
 
+        savebtn = findViewById(R.id.savebtn);
+        savebtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                savedLocation = new Point(currentLocation.getX(),currentLocation.getY(),currentLocation.getYaw());
+                plotGraph();
+            }
+        });
+
         btnStartConnection = findViewById(R.id.connectionBtn);
         btnStartConnection.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -304,16 +314,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 
         //Plotting graph initializations
-        webView = (WebView)findViewById(R.id.web2);
-        webView.getSettings().setLoadWithOverviewMode(true);
-        webView.getSettings().setUseWideViewPort(true);
-        webView.setPadding(0, 0, 0, 10);
-
-        webView.addJavascriptInterface(new WebAppInterface(), "Android");
-
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.setWebViewClient(new WebViewClient());
-        webView.loadUrl("file:///android_asset/chart.html");
+        plotGraph();
     }
 
 
@@ -332,18 +333,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void startAlgorithm(){
         byte[] bytes = "start".getBytes(Charset.defaultCharset());
         mBluetoothConnection.write(bytes);
-
-        Intent intent = new Intent(
-                MainActivity.this,
-                ShowWebChartActivity.class);
-        intent.putExtra("NUM1", 20);
-        intent.putExtra("NUM2", 20);
-        intent.putExtra("NUM3", 20);
-        intent.putExtra("NUM4", 20);
-        intent.putExtra("NUM5", 20);
-
-        startActivity(intent);
-
+        plotGraph();
     }
 
     //Onclick method to calibrate camera
@@ -466,33 +456,41 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     /*
      ********************     PLOTTING GRAPH METHODS    *****************
      */
+    public void plotGraph(){
+        webView = (WebView)findViewById(R.id.web2);
+        webView.getSettings().setLoadWithOverviewMode(true);
+        webView.getSettings().setUseWideViewPort(true);
+        webView.setPadding(0, 0, 0, 10);
+
+        webView.addJavascriptInterface(new WebAppInterface(), "Android");
+
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.setWebViewClient(new WebViewClient());
+        webView.loadUrl("file:///android_asset/chart.html");
+    }
 
     public class WebAppInterface {
 
         @JavascriptInterface
         public int getNum1() {
-            return num1;
+            return currentLocation.getX();
         }
 
         @JavascriptInterface
         public int getNum2() {
-            return num2;
+            return currentLocation.getY();
         }
 
         @JavascriptInterface
         public int getNum3() {
-            return num3;
+            return savedLocation.getX();
         }
 
         @JavascriptInterface
         public int getNum4() {
-            return num4;
+            return savedLocation.getY();
         }
 
-        @JavascriptInterface
-        public int getNum5() {
-            return num5;
-        }
     }
 
 

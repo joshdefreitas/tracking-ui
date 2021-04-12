@@ -7,4 +7,5 @@
     <string name="discover">Discover</string>
     <string name="start_connection">Start Connection</string>
     <string name="calibrate_camera">Calibrate Camera</string>
+    <string name="save">Save</string>
 </resources>
