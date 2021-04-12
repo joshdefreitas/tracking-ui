@@ -448,8 +448,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             BTDevices.get(i).createBond();
             mBTDevice = BTDevices.get(i);
             mBluetoothConnection = new BluetoothConnectionService(MainActivity.this);
-            Toast.makeText(MainActivity.this, "Successfully paired to: "+deviceName,
+            Toast.makeText(MainActivity.this, "Pairing to: "+deviceName,
                     Toast.LENGTH_LONG).show();
+
         }
     }
 
