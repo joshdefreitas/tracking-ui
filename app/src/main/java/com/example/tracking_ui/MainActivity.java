@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 
     private static final String TAG = "MainActivity";
-    private Button startButton,btnONOFF,enableDiscoverable, btnDiscover, btnStartConnection, btnCalibrate, savebtn;
+    private Button startButton,btnONOFF,enableDiscoverable, btnDiscover, btnStartConnection, btnCalibrate, savebtn, scalebtn;
 
     BluetoothConnectionService mBluetoothConnection;
     private static final UUID MY_UUID_INSECURE =
@@ -296,6 +296,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             }
         });
 
+        scalebtn = findViewById(R.id.scalebtn);
+        scalebtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                calibrateScale();
+            }
+        });
+
         enableDiscoverable = findViewById(R.id.button2);
         btnDiscover = findViewById(R.id.button4);
         lvNewDevices = findViewById(R.id.lvNewDevices);
@@ -350,6 +358,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         byte[] bytes = "camera 0".getBytes(Charset.defaultCharset());
         mBluetoothConnection.write(bytes);
     }
+
+    //Onclick method to calibrate scale
+    public void calibrateScale(){
+        byte[] bytes = "scale 0".getBytes(Charset.defaultCharset());
+        mBluetoothConnection.write(bytes);
+    }
+
     //method for starting connection
     public void startConnection(){
         startBTConnection(mBTDevice, MY_UUID_INSECURE);

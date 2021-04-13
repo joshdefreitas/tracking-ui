@@ -8,4 +8,5 @@
     <string name="start_connection">Start Connection</string>
     <string name="calibrate_camera">Calibrate Camera</string>
     <string name="save">Save</string>
+    <string name="calibrate_scale">Calibrate Scale</string>
 </resources>
