@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
             try {
                 String [] splitString = text.split("\\s+");
-                currentLocation = new Point(Integer.parseInt(splitString[0]),Integer.parseInt(splitString[0]),Integer.parseInt(splitString[0]));
+                currentLocation = new Point(Integer.parseInt(splitString[0]),Integer.parseInt(splitString[1]),Integer.parseInt(splitString[2]));
                 plotGraph();
             }catch (Exception e){
                 Log.d(TAG, "Error parsing location: " + e.toString());
