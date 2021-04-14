@@ -2,35 +2,58 @@
 <head>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
-      google.charts.load('current', {'packages':['corechart']});
-      google.charts.setOnLoadCallback(drawChart);
+    google.charts.load("current", {packages:["corechart"]});
+    google.charts.setOnLoadCallback(drawChart);
 
-      function drawChart() {
-        var data = google.visualization.arrayToDataTable([
-          ['x', 'y', {role: 'annotation'}],
-          [ 5,        6, 'Current Location'],
-          [ 16,      23, 'Point 1'],
-          <!--[ ,      ],-->
-          <!--[ -11,     14],-->
-          <!--[ 4,      5],-->
-          <!--[ 3,      3.5],-->
-          <!--[ 6.5,    -7]-->
-        ]);
+    function drawChart() {
+      var data = new google.visualization.DataTable();
+      data.addColumn('number');
+      data.addColumn('number');
 
-        var options = {
-          title: 'Coordinates of saved locations',
-          hAxis: {title: 'x', minValue: 0, maxValue: 15},
-          vAxis: {title: 'y', minValue: 0, maxValue: 15},
-          legend: 'none'
-        };
+      var radius = 100;
 
-        var chart = new google.visualization.ScatterChart(document.getElementById('chart_div'));
+      // Our central point, which will jiggle.
+      data.addRow([0, 0]);
 
+      var options = {
+        legend: 'none',
+        colors: ['#087037'],
+        pointShape: 'star',
+        pointSize: 18,
+        animation: {
+          duration: 200,
+          easing: 'inAndOut',
+        }
+      };
+
+      var chart = new google.visualization.ScatterChart(document.getElementById('animatedshapes_div'));
+
+      // Start the animation by listening to the first 'ready' event.
+      google.visualization.events.addOneTimeListener(chart, 'ready', randomWalk);
+
+      // Control all other animations by listening to the 'animationfinish' event.
+      google.visualization.events.addListener(chart, 'animationfinish', randomWalk);
+
+      chart.draw(data, options);
+
+      function randomWalk() {
+        var x = data.getValue(data.getNumberOfRows() - 1, 0);
+        var y = data.getValue(data.getNumberOfRows() - 1, 1);
+        x += 5 * (Math.random() - 0.5);
+        y += 5 * (Math.random() - 0.5);
+        if (x * x + y * y > radius * radius) {
+          // Out of bounds. Bump toward center.
+          x += Math.random() * ((x < 0) ? 5 : -5);
+          y += Math.random() * ((y < 0) ? 5 : -5);
+        }
+        data.setValue(data.getNumberOfRows() - 1, 0, x);
+        data.setValue(data.getNumberOfRows() - 1, 1, y);
         chart.draw(data, options);
       }
-    </script>
+    }
+  </script>
 </head>
 <body>
-<div id="chart_div" style="width: 900px; height: 500px;"></div>
+<div id="animatedshapes_div" style="width: 500px; height: 500px;"></div>
 </body>
 </html>
