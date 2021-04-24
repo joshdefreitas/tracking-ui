@@ -12,11 +12,10 @@
 
       var radius = 100;
 
-      // Our central point, which will jiggle.
-      data.addRow([0, 0]);
-      data.addRow([0, 0]);
-      data.addRow([25, 25]);
-      data.addRow([10, 10]);
+      data.addRow([Android.getNum1(), Android.getNum2()]);
+      data.addRow([Android.getNum3(), Android.getNum4()]);
+      //data.addRow([25, 25]);
+      //data.addRow([10, 10]);
 
       var options = {
         legend: 'none',
